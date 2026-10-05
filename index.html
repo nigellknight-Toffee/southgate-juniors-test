@@ -52,9 +52,12 @@
   nav.links button:hover:not(.active){background:#ffffff14;}
   .switch-btn{background:none;border:1px solid #ffffff3a;color:#cfcfcb;font-size:12px;padding:7px 12px;border-radius:20px;font-weight:600;}
   .switch-btn:hover{border-color:#fff;color:#fff;}
-  .tier-picker{display:flex;align-items:center;gap:6px;font-size:11px;color:#cfcfcb;font-weight:600;}
-  .tier-select{background:#161616;border:1px solid #ffffff3a;color:#fff;font-size:12px;padding:6px 10px;border-radius:20px;font-weight:600;font-family:inherit;}
-  .tier-select:hover{border-color:#fff;}
+  .tier-picker{display:flex;align-items:center;gap:8px;font-size:13px;color:#fff;font-weight:800;letter-spacing:.2px;}
+  .tier-select{background:var(--red);border:2px solid #fff;color:#fff;font-size:14px;padding:6px 12px;border-radius:20px;font-weight:800;font-family:inherit;cursor:pointer;animation:tierPulse 2s ease-in-out 3;}
+  .tier-select:hover{background:#fff;color:#161616;}
+  .tier-select option{background:#161616;color:#fff;}
+  @keyframes tierPulse{0%,100%{box-shadow:0 0 0 0 #ffffff00}50%{box-shadow:0 0 0 6px #ffffff40}}
+  @media (prefers-reduced-motion:reduce){.tier-select{animation:none}}
   /* ---------- Shell ---------- */
   .page{max-width:1000px;margin:0 auto;padding:28px 18px 60px;}
   .hero{display:flex;gap:20px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:28px;}
@@ -327,7 +330,7 @@ function renderShell(){
   const other = state.track === 'gk' ? 'outfield' : 'gk';
   const otherLabel = state.track === 'gk' ? 'Switch to Outfield' : 'Switch to Goalkeeper';
   const tierPicker = state.track !== 'gk' ? `
-        <label class="tier-picker">Skills for
+        <label class="tier-picker">What's your group?
           <select id="ageTierSelect" class="tier-select">
             ${AGE_TIERS.map(t=>`<option value="${t.id}" ${state.ageTier===t.id?'selected':''}>${t.label}</option>`).join('')}
           </select>
