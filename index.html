@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Southgate Juniors — Your Skills</title>
+<link rel="icon" href="https://southgatehc.org.uk/wp-content/uploads/2024/10/cropped-Final-Roundel-270x270.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C8102E;
+    --red-dark:#8E0B20;
+    --ink:#161616;
+    --paper:#FAFAF8;
+    --card:#FFFFFF;
+    --line:#E7E5DF;
+    --green:#1F7A4D;
+    --green-bg:#EAF6EF;
+    --red-bg:#FCEAEC;
+    --gold:#E3A62F;
+    --muted:#6B6B66;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Barlow',sans-serif;background:var(--paper);color:var(--ink);}
+  h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;letter-spacing:0.01em;margin:0;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  .credit{font-size:12px;color:var(--muted);}
+  /* ---------- Landing ---------- */
+  .landing{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 20px;background:var(--ink);color:#fff;}
+  .landing img{width:96px;height:96px;border-radius:50%;margin-bottom:18px;background:#fff;}
+  .landing h1{font-size:clamp(28px,6vw,44px);margin-bottom:6px;}
+  .landing p{color:#cfcfcb;margin:0 0 32px;font-size:17px;}
+  .choice-row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+  .choice-card{width:230px;padding:28px 20px;border-radius:20px;border:2px solid #fff2;background:#ffffff10;color:#fff;transition:transform .15s, background .15s;}
+  .choice-card:hover{background:#ffffff1c;transform:translateY(-3px);}
+  .choice-card .glyph{width:56px;height:56px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:20px;}
+  .choice-card.of .glyph{background:var(--green);}
+  .choice-card.gk .glyph{background:var(--red);}
+  .choice-card span{display:block;font-size:15px;color:#cfcfcb;margin-top:6px;}
+  /* ---------- Nav ---------- */
+  .topbar{position:sticky;top:0;background:var(--ink);color:#fff;z-index:20;}
+  .topbar-inner{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 18px;}
+  .topbar img{width:34px;height:34px;border-radius:50%;background:#fff;}
+  .brand{font-family:'Archivo Black';font-size:15px;flex:1;}
+  .brand small{display:block;font-family:'Barlow';font-weight:500;font-size:11px;color:#cfcfcb;letter-spacing:.04em;}
+  nav.links{display:flex;gap:4px;}
+  nav.links button{background:none;border:none;color:#e8e8e4;font-size:14px;padding:8px 12px;border-radius:8px;font-weight:600;}
+  nav.links button.active{background:var(--red);color:#fff;}
+  nav.links button:hover:not(.active){background:#ffffff14;}
+  .switch-btn{background:none;border:1px solid #ffffff3a;color:#cfcfcb;font-size:12px;padding:7px 12px;border-radius:20px;font-weight:600;}
+  .switch-btn:hover{border-color:#fff;color:#fff;}
+  .tier-picker{display:flex;align-items:center;gap:6px;font-size:11px;color:#cfcfcb;font-weight:600;}
+  .tier-select{background:#161616;border:1px solid #ffffff3a;color:#fff;font-size:12px;padding:6px 10px;border-radius:20px;font-weight:600;font-family:inherit;}
+  .tier-select:hover{border-color:#fff;}
+  /* ---------- Shell ---------- */
+  .page{max-width:1000px;margin:0 auto;padding:28px 18px 60px;}
+  .hero{display:flex;gap:20px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:28px;}
+  .hero img{width:76px;height:76px;border-radius:50%;object-fit:cover;background:var(--line);flex-shrink:0;}
+  .hero h2{font-size:20px;margin-bottom:6px;}
+  .hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.5;}
+  .section-label{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:10px;}
+  /* ---------- Skill cards ---------- */
+  .skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+  .skill-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .skill-card .tag{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin:12px 0 8px 14px;text-transform:uppercase;letter-spacing:.03em;}
+  .tag.inpos{background:var(--green-bg);color:var(--green);}
+  .tag.outpos{background:var(--red-bg);color:var(--red-dark);}
+  .tag.gk{background:#FDF3E3;color:#8a6110;}
+  .skill-card h3{font-size:16px;padding:0 14px;margin-bottom:10px;}
+  .skill-card .video-toggle{width:100%;text-align:left;background:var(--ink);color:#fff;border:none;padding:10px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .skill-card .video-toggle:before{content:'▶';font-size:10px;}
+  .skill-card .video-wrap{position:relative;width:100%;padding-top:56.25%;background:#000;display:none;}
+  .skill-card .video-wrap.open{display:block;}
+  .skill-card .video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+  /* ---------- Your Skills ---------- */
+  .zones{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:26px;}
+  .zone{flex:1;min-width:210px;border:3px dashed var(--line);border-radius:50%/24px;aspect-ratio:1.6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;transition:border-color .15s, background .15s;position:relative;}
+  .zone.super{border-color:var(--gold);background:#FEFAF0;}
+  .zone.focus{border-color:var(--red);background:var(--red-bg);}
+  .zone.dragover{background:#fff9e6;border-style:solid;}
+  .zone .zone-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;}
+  .zone .placed-chip{font-family:'Archivo Black';font-size:16px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:8px 18px;}
+  .zone .empty-hint{font-size:13px;color:var(--muted);}
+  .chip-pool{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px;}
+  .chip{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:9px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .chip.inpos{border-color:var(--green);}
+  .chip.outpos{border-color:var(--red);}
+  .chip.gk{border-color:var(--gold);}
+  .chip .dot{width:8px;height:8px;border-radius:50%;}
+  .chip.inpos .dot{background:var(--green);}
+  .chip.outpos .dot{background:var(--red);}
+  .chip.gk .dot{background:var(--gold);}
+  .chip:active{cursor:grabbing;}
+  .chip{cursor:grab;touch-action:none;}
+  .dragging-clone{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;transform:translate(-50%,-50%) scale(1.05);opacity:0.95;box-shadow:0 6px 16px rgba(0,0,0,0.25);}
+  .chip.used{opacity:.35;pointer-events:none;}
+  .form-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;max-width:420px;}
+  .form-card label, .ask-card label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.04em;}
+  .form-card label:first-child, .ask-card label:first-child{margin-top:0;}
+  .form-card input, .form-card select, .form-card textarea,
+  .ask-card input, .ask-card select, .ask-card textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:15px;font-family:inherit;}
+  .submit-btn{margin-top:18px;background:var(--red);color:#fff;border:none;padding:12px 22px;border-radius:24px;font-weight:700;font-size:15px;}
+  .submit-btn:hover{background:var(--red-dark);}
+  .error{color:var(--red-dark);font-size:13px;margin-top:6px;display:none;}
+  .confirm{background:var(--green-bg);border:1px solid var(--green);color:var(--green);padding:16px 20px;border-radius:var(--radius);font-weight:600;margin-top:16px;display:none;}
+  .hint{margin:0 0 6px;font-size:13px;color:var(--muted);}
+  .char-count{text-align:right;font-size:12px;color:var(--muted);margin-top:2px;}
+  /* ---------- Your Coach ---------- */
+  .filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+  .filter-row select{padding:9px 14px;border-radius:20px;border:1px solid var(--line);background:#fff;font-size:14px;font-family:inherit;font-weight:600;}
+  .coach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:30px;}
+  .coach-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center;}
+  .coach-card .avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:20px;margin:0 auto 10px;}
+  .coach-card h4{margin:0 0 4px;font-size:15px;font-weight:700;}
+  .coach-card p{margin:0;font-size:12px;color:var(--muted);}
+  .ask-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;max-width:460px;}
+  .proto-note{margin-top:40px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;}
+  @media(max-width:560px){ .hero{flex-direction:column;text-align:center;} nav.links{order:3;flex-basis:100%;justify-content:center;margin-top:4px;} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------------- Data ---------------- */
+// VIDEO STRATEGY (v3 — reverted to inline embedding, per Chris/Nigel's requirement that videos
+// play in place rather than opening a popup/new tab):
+//
+// The 3 techniques that actually fixed inline playback on desktop back in v1 are unchanged
+// below and still doing the work: (1) the .video-wrap padding-top:56.25% trick instead of the
+// CSS aspect-ratio property (Safari rendering bug), (2) the iframe is built with
+// document.createElement('iframe') at click-time, never at page load and never via innerHTML
+// (WebKit quirk — see attachShell), (3) every iframe gets an explicit `allow` attribute.
+//
+// What was wrong in the last two rebuilds, now fixed:
+// - The 12+ tier was only using real Vimeo clips for 5 of its 10 skills; the other 5
+//   (Receiving, Carrying, Passing, Marking, Tackling) had been swapped for Hockey Hub links.
+//   All 10 now use the original Vimeo IDs England Hockey supplied, same as GK.
+// - The U8/U10/U12 skills (added in v2) never had real video IDs wired in — HHUB() pointed at
+//   the Hockey Hub *page*, not a playable embed. Each one now uses the actual YouTube ID that
+//   page embeds, extracted directly from hockeyhub.englandhockey.co.uk (25 skills checked one
+//   by one). "Error 153" in an earlier round came from testing a youtube.com/embed/... URL as
+//   a direct page visit, which YouTube always blocks — that's not how the videos are actually
+//   used here, and testing the real iframe-embed path on this site's own domain showed no such
+//   restriction.
+// - Every embed URL now includes playsinline=1 (plus modestbranding/rel/portrait/title/byline
+//   housekeeping). Without it, both YouTube's and Vimeo's iframe players can fail to play
+//   inline on iPhone Safari and instead force fullscreen or silently stall — this was never set
+//   before, and going by project history the iPhone playback bug was flagged once and then
+//   deliberately left unresolved, not actually fixed. This is a genuine attempt at that bug,
+//   not a confirmed fix — needs testing on a real iPhone and Android device once this is live.
+// - All 41 video IDs (16 Vimeo + 25 YouTube) were individually checked against Vimeo's/YouTube's
+//   oEmbed APIs (returns the real title for a given ID, or an error if it's private/deleted/
+//   embed-restricted) — every one is public and embeddable. That check also caught a real bug:
+//   receiving/carrying/passing had been assigned the wrong 3 Vimeo IDs (their titles didn't
+//   match — e.g. "receiving" was pointing at a "Hitting Forehand" clip). Fixed by matching each
+//   ID to its actual oEmbed title rather than assumed list order.
+// - A screen that's black with nothing rendering (not even a paused thumbnail/title bar) —
+//   for every video, on every filter — points at how the page itself is being opened rather
+//   than any one video ID. Opening this file directly as a local file (file://, e.g.
+//   double-clicking it) is the prime suspect: file:// pages send no Referer header and have a
+//   null origin, and YouTube/Vimeo's players can fail silently without one. That can't be fixed
+//   in the code — it needs testing over a real http(s) URL instead of a local file, which is
+//   exactly what the Claude-published link for this build is for.
+const YOUTUBE = id => `https://www.youtube.com/embed/${id}?rel=0&playsinline=1&modestbranding=1`;
+const VIMEO = id => `https://player.vimeo.com/video/${id}?playsinline=1&title=0&byline=0&portrait=0`;
+
+// "12+" tier: the original broad skill categories, all 10 using the Vimeo clips England Hockey
+// supplied for v1 (recovered from project history — these are the IDs that actually worked).
+const OUTFIELD_12PLUS = [
+  {id:'receiving', name:'Receiving', cat:'inpos', embed:VIMEO('631820134'), desc:"Getting the ball under control cleanly, first time."},
+  {id:'carrying', name:'Carrying', cat:'inpos', embed:VIMEO('630881654'), desc:"Moving the ball forward under control at pace."},
+  {id:'passing', name:'Passing', cat:'inpos', embed:VIMEO('630920544'), desc:"Moving the ball accurately to a teammate."},
+  {id:'leading', name:'Leading', cat:'inpos', embed:VIMEO('630846665'), desc:"Moving into space to offer an option, without the ball."},
+  {id:'goalscoring', name:'Goalscoring', cat:'inpos', embed:VIMEO('630848004'), desc:"Finding the back of the net."},
+  {id:'positioning', name:'Positioning & Movement', cat:'outpos', embed:VIMEO('637097682'), desc:"Being in the best spot to help the team defend."},
+  {id:'marking', name:'Marking', cat:'outpos', embed:VIMEO('633199572'), desc:"Staying tight to deny the opponent the ball."},
+  {id:'intercepting', name:'Intercepting', cat:'outpos', embed:VIMEO('635063375'), desc:"Winning the ball by reading and cutting out a pass."},
+  {id:'closing', name:'Closing Down Space', cat:'outpos', embed:VIMEO('633023245'), desc:"Pressuring the ball carrier to dictate their options."},
+  {id:'tackling', name:'Tackling', cat:'outpos', embed:VIMEO('633020508'), desc:"Winning the ball off an opponent in a challenge."},
+];
+// Age-specific Highly Skilled Actions, sourced from England Hockey's Hockey Hub (hockey_iq page),
+// "Priority Highly Skilled Actions" lists for each age band — each linking straight to that
+// skill's own Hockey Hub page (title, description and video, all on England Hockey's own site).
+const OUTFIELD_U8 = [
+  {id:'fastforehandcarry', name:'Fast Forehand Carry', cat:'inpos', embed:YOUTUBE('RGIfgWgHGC8'), desc:"How to carry the ball on the right hand side of the body as fast as possible."},
+  {id:'forehandtobackhandcarry', name:'Forehand to Backhand Carry', cat:'inpos', embed:YOUTUBE('W3dfDgxdNxk'), desc:"How to move the ball from the right hand side to the left hand side of the body in the carry."},
+  {id:'forehandpushpass', name:'Forehand Push Pass', cat:'inpos', embed:YOUTUBE('jHi-DEW217w'), desc:"How to pass the ball from the right hand side of the body using a push technique."},
+  {id:'forehandsweeppass', name:'Forehand Sweep Pass', cat:'inpos', embed:YOUTUBE('mDMUdNG6T5Y'), desc:"How to pass the ball from the right hand side of the body using a forehand sweep action."},
+  {id:'backhandsweeppass', name:'Backhand Sweep Pass', cat:'inpos', embed:YOUTUBE('mDhIBfeNvX0'), desc:"How to pass the ball from the left hand side of the body using a backhand sweep technique."},
+  {id:'forehandreceive', name:'Forehand Receive', cat:'inpos', embed:YOUTUBE('jnZ8wFmT9xc'), desc:"How to receive the ball on the right hand side of the body."},
+  {id:'backhandreceive', name:'Backhand Receive', cat:'inpos', embed:YOUTUBE('L7FoPU9LLB4'), desc:"How to receive the ball on the left hand side of the body."},
+  {id:'forehandblocktackle', name:'Forehand Block Tackle', cat:'outpos', embed:YOUTUBE('EMawS0Av0Fc'), desc:"How to win the ball off an opponent on the right hand side of the body using a block tackle technique."},
+];
+const OUTFIELD_U10 = [
+  {id:'fastforehandcarry', name:'Fast Forehand Carry', cat:'inpos', embed:YOUTUBE('RGIfgWgHGC8'), desc:"How to carry the ball on the right hand side of the body as fast as possible."},
+  {id:'forehandtobackhandcarry', name:'Forehand to Backhand Carry', cat:'inpos', embed:YOUTUBE('W3dfDgxdNxk'), desc:"How to move the ball from the right hand side to the left hand side of the body in the carry."},
+  {id:'forehandpushpass', name:'Forehand Push Pass', cat:'inpos', embed:YOUTUBE('jHi-DEW217w'), desc:"How to pass the ball from the right hand side of the body using a push technique."},
+  {id:'forehandsweeppass', name:'Forehand Sweep Pass', cat:'inpos', embed:YOUTUBE('mDMUdNG6T5Y'), desc:"How to pass the ball from the right hand side of the body using a forehand sweep action."},
+  {id:'backhandsweeppass', name:'Backhand Sweep Pass', cat:'inpos', embed:YOUTUBE('mDhIBfeNvX0'), desc:"How to pass the ball from the left hand side of the body using a backhand sweep technique."},
+  {id:'forehandreceive', name:'Forehand Receive', cat:'inpos', embed:YOUTUBE('jnZ8wFmT9xc'), desc:"How to receive the ball on the right hand side of the body."},
+  {id:'backhandreceive', name:'Backhand Receive', cat:'inpos', embed:YOUTUBE('L7FoPU9LLB4'), desc:"How to receive the ball on the left hand side of the body."},
+  {id:'fastbackhandcarry', name:'Fast Backhand Carry', cat:'inpos', embed:YOUTUBE('9R2x7wnV5iA'), desc:"How to carry the ball on the left hand side of the body as fast as possible."},
+  {id:'3dliftforward', name:'3D Lift Forward', cat:'inpos', embed:YOUTUBE('DV1oVZF0kyI'), desc:"How to carry the ball forward using 3D lifts."},
+  {id:'forehandhit', name:'Forehand Hit', cat:'inpos', embed:YOUTUBE('UmbqEXzAJw8'), desc:"How to pass the ball from the right hand side of the body using a hitting technique."},
+  {id:'backhandpushpass', name:'Backhand Push Pass', cat:'inpos', embed:YOUTUBE('t1jU_hsd9tc'), desc:"How to pass the ball from the left hand side of the body using a backhand push action."},
+  {id:'forehandreceiveacrossbody', name:'Forehand Receive Across Body', cat:'inpos', embed:YOUTUBE('eFy7DD-qX_Q'), desc:"How to receive the ball on the right hand side of the body, letting it move across the body on the first touch."},
+  {id:'touchtightmarking', name:'Touch Tight Marking', cat:'outpos', embed:YOUTUBE('LKjmrNJveng'), desc:"How to mark an opposition player to make sure they don't win the ball."},
+];
+const OUTFIELD_U12 = [
+  {id:'fastforehandcarry', name:'Fast Forehand Carry', cat:'inpos', embed:YOUTUBE('RGIfgWgHGC8'), desc:"How to carry the ball on the right hand side of the body as fast as possible."},
+  {id:'forehandtobackhandcarry', name:'Forehand to Backhand Carry', cat:'inpos', embed:YOUTUBE('W3dfDgxdNxk'), desc:"How to move the ball from the right hand side to the left hand side of the body in the carry."},
+  {id:'forehandblocktackle', name:'Forehand Block Tackle', cat:'outpos', embed:YOUTUBE('EMawS0Av0Fc'), desc:"How to win the ball off an opponent on the right hand side of the body using a block tackle technique."},
+  {id:'forehandsweeppass', name:'Forehand Sweep Pass', cat:'inpos', embed:YOUTUBE('mDMUdNG6T5Y'), desc:"How to pass the ball from the right hand side of the body using a forehand sweep action."},
+  {id:'forehandreceive', name:'Forehand Receive', cat:'inpos', embed:YOUTUBE('jnZ8wFmT9xc'), desc:"How to receive the ball on the right hand side of the body."},
+  {id:'backhandsweeppass', name:'Backhand Sweep Pass', cat:'inpos', embed:YOUTUBE('mDhIBfeNvX0'), desc:"How to pass the ball from the left hand side of the body using a sweep technique."},
+  {id:'backhandreceive', name:'Backhand Receive', cat:'inpos', embed:YOUTUBE('L7FoPU9LLB4'), desc:"How to receive the ball on the left hand side of the body."},
+  {id:'fastbackhandcarry', name:'Fast Backhand Carry', cat:'inpos', embed:YOUTUBE('9R2x7wnV5iA'), desc:"How to carry the ball on the left hand side of the body as fast as possible."},
+  {id:'3dliftforward', name:'3D Lift Forward', cat:'inpos', embed:YOUTUBE('DV1oVZF0kyI'), desc:"How to carry the ball forward using 3D lifts."},
+  {id:'forehandhit', name:'Forehand Hit', cat:'inpos', embed:YOUTUBE('UmbqEXzAJw8'), desc:"How to pass the ball from the right hand side of the body using a hitting technique."},
+  {id:'forehandreceiveacrossbody', name:'Forehand Receive Across Body', cat:'inpos', embed:YOUTUBE('eFy7DD-qX_Q'), desc:"How to receive the ball on the right hand side of the body, letting it move across the body on the first touch."},
+  {id:'backhandreceiveacrossbody', name:'Backhand Receive Across Body', cat:'inpos', embed:YOUTUBE('coZPV3HsaqY'), desc:"How to receive the ball on the left hand side as it comes across the body."},
+  {id:'pivotforehandspin', name:'Pivot Skill - Forehand Spin', cat:'inpos', embed:YOUTUBE('HmBZMbb6MoA'), desc:"How to carry the ball and complete a spin with the ball on the right hand side of the body."},
+  {id:'3dliftlefttoright', name:'3D Lift from Left to Right', cat:'inpos', embed:YOUTUBE('y22cj8-ZDTk'), desc:"How to carry the ball and lift the ball from the left hand side to the right hand side of the body."},
+  {id:'3dliftrighttoleft', name:'3D Lift from Right to Left', cat:'inpos', embed:YOUTUBE('HypGqqgQIMI'), desc:"How to carry the ball and lift the ball from the right hand side to the left hand side of the body."},
+  {id:'disguisedforehandpushpass', name:'Disguised Forehand Push Pass', cat:'inpos', embed:YOUTUBE('4RvYWQ8h9VU'), desc:"How to pass the ball using a push technique and disguise where the pass will go."},
+  {id:'forehandpostupreceive', name:'Forehand Post-Up Receive', cat:'inpos', embed:YOUTUBE('A_qjwl2oB0U'), desc:"How to receive the ball on the right hand side of the body when posting up for the ball."},
+  {id:'backhandhit', name:'Backhand Hit', cat:'inpos', embed:YOUTUBE('YK8YOY858kk'), desc:"How to pass the ball from the left hand side of the body using a hitting technique."},
+  {id:'forehandflick', name:'Forehand Flick', cat:'inpos', embed:YOUTUBE('NJlaR6Oj5rA'), desc:"How to flick the ball from the right hand side of the body."},
+  {id:'backhandshavetackle', name:'Backhand Shave Tackle', cat:'outpos', embed:YOUTUBE('KLqMqrjUFZA'), desc:"How to perform a shave tackle on your backhand to win the ball from behind the player with the ball."},
+  {id:'backspaceforehandhit', name:'Backspace Forehand Hit', cat:'inpos', embed:YOUTUBE('895ZEtJYtv0'), desc:"How to hit the ball when it is in the backspace of a player's stance."},
+  {id:'touchtightmarking', name:'Touch Tight Marking', cat:'outpos', embed:YOUTUBE('LKjmrNJveng'), desc:"How to mark a player to stop them from receiving the ball."},
+  {id:'flattrianglemarking', name:'Flat Triangle Marking', cat:'outpos', embed:YOUTUBE('d8rC9m1-pkw'), desc:"How to mark a player to win the ball."},
+];
+const OUTFIELD_TIERS = { u8: OUTFIELD_U8, u10: OUTFIELD_U10, u12: OUTFIELD_U12, '12plus': OUTFIELD_12PLUS };
+const AGE_TIERS = [
+  {id:'u8', label:'U8'},
+  {id:'u10', label:'U10'},
+  {id:'u12', label:'U12'},
+  {id:'12plus', label:'12+'},
+];
+// GK videos are unrelated to the outfield Highly Skilled Actions above — Hockey Hub's Priority
+// HSA lists don't cover goalkeeping — so these keep the original v1 Vimeo clips, embedded inline.
+const GK_SKILLS = [
+  {id:'shotstopping', name:'Shot Stopping', cat:'gk', embed:VIMEO('635015781'), desc:"Saving shots on goal."},
+  {id:'gkblocking', name:'Blocking', cat:'gk', embed:VIMEO('635009065'), desc:"Using body and kit to smother the ball."},
+  {id:'clearances', name:'Clearances', cat:'gk', embed:VIMEO('635006738'), desc:"Getting the ball away from danger safely."},
+  {id:'sticks', name:'Stick Skills', cat:'gk', embed:VIMEO('635003880'), desc:"Using the stick to make saves and clearances."},
+  {id:'secondphase', name:'2nd Phase Play', cat:'gk', embed:VIMEO('634999678'), desc:"Reacting fast when the ball stays in the danger zone."},
+  {id:'onevone', name:'One vs One', cat:'gk', embed:VIMEO('634998492'), desc:"Facing down an attacker with a clear run at goal."},
+];
+const COACHES = [
+  {name:'Chris Pearce', role:'Hockey Director', gender:'Mixed', age:'All ages'},
+  {name:'Sam Whitfield', role:'Head GK Coach', gender:'Mixed', age:'All ages'},
+  {name:'Priya Anand', role:'Coach', gender:'Girls', age:'U8'},
+  {name:'Tom Realini', role:'Coach', gender:'Boys', age:'U8'},
+  {name:'Ella Marchetti', role:'Coach', gender:'Girls', age:'U10'},
+  {name:'Ben Okafor', role:'Coach', gender:'Boys', age:'U10'},
+  {name:'Grace Liu', role:'Coach', gender:'Girls', age:'U12'},
+  {name:'Josh Fenwick', role:'Coach', gender:'Boys', age:'U12'},
+  {name:'Nigel Knight', role:'Coach', gender:'Boys', age:'U16'},
+  {name:'Amara Osei', role:'Coach', gender:'Girls', age:'U14'},
+];
+const AGE_GROUPS = ['U8','U10','U12','U14','U16'];
+
+/* ---------------- State ---------------- */
+function getCookie(name){
+  const m = document.cookie.match('(?:^|; )'+name+'=([^;]*)');
+  return m ? decodeURIComponent(m[1]) : null;
+}
+function setCookie(name, val){
+  document.cookie = name+'='+encodeURIComponent(val)+';path=/;max-age='+(60*60*24*365);
+}
+let state = {
+  track: getCookie('sgj_track'), // 'outfield' | 'gk' | null
+  view: 'home',
+  ageTier: getCookie('sgj_agetier') || '12plus', // 'u8' | 'u10' | 'u12' | '12plus' — outfield skill-list filter
+  superSkill: null,
+  focusSkill: null,
+};
+
+// Age-tier filtering only applies to outfield skills — England Hockey's Hockey Hub doesn't
+// publish an age-graded goalkeeping skill list, so GK players always see the same 6 GK skills.
+function skillsForTrack(){ return state.track === 'gk' ? GK_SKILLS : (OUTFIELD_TIERS[state.ageTier] || OUTFIELD_12PLUS); }
+function tagLabel(cat){ return cat === 'inpos' ? 'In possession' : cat === 'outpos' ? 'Out of possession' : 'Goalkeeping'; }
+function tierLabel(){
+  if(state.track === 'gk') return 'Goalkeeper (all ages)';
+  const t = AGE_TIERS.find(x=>x.id===state.ageTier);
+  return t ? t.label : '12+';
+}
+
+/* ---------------- Render ---------------- */
+function render(){
+  const app = document.getElementById('app');
+  if(!state.track){ app.innerHTML = renderLanding(); attachLanding(); return; }
+  app.innerHTML = renderShell();
+  attachShell();
+}
+
+function renderLanding(){
+  return `
+    <div class="landing">
+      <img src="https://southgatehc.org.uk/wp-content/uploads/2024/10/cropped-Final-Roundel-270x270.png" alt="Southgate HC crest">
+      <h1>Southgate Juniors</h1>
+      <p>Let's get you set up. Are you a goalkeeper or an outfield player?</p>
+      <div class="choice-row">
+        <button class="choice-card of" data-track="outfield"><div class="glyph">OF</div>Outfield player<span>Carrying, passing, tackling and more</span></button>
+        <button class="choice-card gk" data-track="gk"><div class="glyph">GK</div>Goalkeeper<span>Shot stopping, blocking, 1v1s and more</span></button>
+      </div>
+    </div>`;
+}
+function attachLanding(){
+  document.querySelectorAll('.choice-card').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.track = btn.dataset.track;
+      setCookie('sgj_track', state.track);
+      state.view = 'home';
+      render();
+    });
+  });
+}
+
+function renderShell(){
+  const other = state.track === 'gk' ? 'outfield' : 'gk';
+  const otherLabel = state.track === 'gk' ? 'Switch to Outfield' : 'Switch to Goalkeeper';
+  const tierPicker = state.track !== 'gk' ? `
+        <label class="tier-picker">Skills for
+          <select id="ageTierSelect" class="tier-select">
+            ${AGE_TIERS.map(t=>`<option value="${t.id}" ${state.ageTier===t.id?'selected':''}>${t.label}</option>`).join('')}
+          </select>
+        </label>` : '';
+  return `
+    <div class="topbar">
+      <div class="topbar-inner">
+        <img src="https://southgatehc.org.uk/wp-content/uploads/2024/10/cropped-Final-Roundel-270x270.png" alt="">
+        <div class="brand">Southgate Juniors<small>${state.track==='gk'?'Goalkeeper':'Outfield'} zone</small></div>
+        <nav class="links">
+          <button data-view="home" class="${state.view==='home'?'active':''}">Home</button>
+          <button data-view="yourskills" class="${state.view==='yourskills'?'active':''}">Your skills</button>
+          <button data-view="yourcoach" class="${state.view==='yourcoach'?'active':''}">Your coach</button>
+        </nav>
+        ${tierPicker}
+        <button class="switch-btn" id="switchTrack">${otherLabel}</button>
+      </div>
+    </div>
+    <div class="page">${renderView()}</div>`;
+}
+function renderView(){
+  if(state.view === 'yourskills') return renderYourSkills();
+  if(state.view === 'yourcoach') return renderYourCoach();
+  return renderHome();
+}
+
+function renderHome(){
+  const headCoach = state.track === 'gk'
+    ? {name:'Sam Whitfield', role:'Head GK Coach'}
+    : {name:'Chris Pearce', role:'Hockey Director'};
+  const skills = skillsForTrack();
+  return `
+    <div class="hero">
+      <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(headCoach.name)}&background=161616&color=fff" alt="${headCoach.name}">
+      <div>
+        <h2>Welcome, from ${headCoach.name}</h2>
+        <p><strong>${headCoach.role}</strong> — Have a look through your skills below, then head to <em>Your skills</em> to tell us your super skill and what you want to work on.</p>
+      </div>
+    </div>
+    <div class="section-label">Your skills</div>
+    <div class="skill-grid">${skills.map(renderSkillCard).join('')}</div>
+    <p class="credit" style="margin-top:16px;">Videos and skill content courtesy of England Hockey.</p>
+  `;
+}
+function renderSkillCard(s){
+  // Inline video: the button just reveals a .video-wrap; the iframe itself is built lazily by
+  // attachShell's click handler (document.createElement, not innerHTML — see comment there).
+  const watchControl = s.embed
+    ? `<button class="video-toggle" data-video="${s.id}" data-embed="${s.embed}">Watch the video</button>
+      <div class="video-wrap" id="vid-${s.id}"></div>`
+    : '';
+  return `
+    <div class="skill-card">
+      <span class="tag ${s.cat}">${tagLabel(s.cat)}</span>
+      <h3>${s.name}</h3>
+      <p style="padding:0 14px 14px;margin:0;font-size:13px;color:var(--muted);">${s.desc}</p>
+      ${watchControl}
+    </div>`;
+}
+
+function renderYourSkills(){
+  const skills = skillsForTrack();
+  return `
+    <h2 style="margin-bottom:6px;">Your skills</h2>
+    <p style="color:var(--muted);margin-top:0;">Drag a skill into a circle below — or tap a skill, then tap a circle.</p>
+    <div class="zones">
+      <div class="zone super" id="zoneSuper" data-zone="super">
+        <div class="zone-label">My super skill</div>
+        ${state.superSkill ? `<div class="placed-chip">${skillName(state.superSkill)}</div>` : `<div class="empty-hint">Drop your strongest skill here</div>`}
+      </div>
+      <div class="zone focus" id="zoneFocus" data-zone="focus">
+        <div class="zone-label">My focus area</div>
+        ${state.focusSkill ? `<div class="placed-chip">${skillName(state.focusSkill)}</div>` : `<div class="empty-hint">Drop what you want to work on here</div>`}
+      </div>
+    </div>
+    <div class="chip-pool">${skills.map(renderChip).join('')}</div>
+    <div class="form-card">
+      <label for="playerName">Your name</label>
+      <input type="text" id="playerName" placeholder="First and last name">
+      <label for="playerAge">Age group</label>
+      <select id="playerAge"><option value="">Select...</option>${AGE_GROUPS.map(a=>`<option value="${a}">${a}</option>`).join('')}</select>
+      <label for="superDetail">Proud of your super strength</label>
+      <p class="hint">What are you particularly proud of with that super strength? (optional)</p>
+      <textarea id="superDetail" rows="2" maxlength="100" placeholder="Optional — e.g. My push pass is really accurate now."></textarea>
+      <div class="char-count"><span id="superDetailCount">0</span>/100</div>
+      <label for="focusDetail">Focus for your development</label>
+      <p class="hint">What do you specifically need to focus on from that skill? (optional)</p>
+      <textarea id="focusDetail" rows="2" maxlength="100" placeholder="Optional — e.g. Getting faster in 1-on-1 tackles."></textarea>
+      <div class="char-count"><span id="focusDetailCount">0</span>/100</div>
+      <p class="error" id="skillsError">Pick a super skill and a focus area, add your name and age group first.</p>
+      <button class="submit-btn" id="submitSkills">Tell my coach</button>
+      <div class="confirm" id="skillsConfirm">Thanks! Your coach has been sent this.</div>
+      <p class="error" id="skillsSendError">Something went wrong sending this — please try again in a moment.</p>
+    </div>
+  `;
+}
+function skillName(id){
+  const s = skillsForTrack().find(x=>x.id===id);
+  return s ? s.name : '';
+}
+function renderChip(s){
+  const used = (state.superSkill===s.id || state.focusSkill===s.id);
+  return `<button class="chip ${s.cat} ${used?'used':''}" data-skill="${s.id}"><span class="dot"></span>${s.name}</button>`;
+}
+
+function renderYourCoach(){
+  return `
+    <h2 style="margin-bottom:6px;">Your coach</h2>
+    <p style="color:var(--muted);margin-top:0;">Sample coach list shown here — Chris will supply the real roster.</p>
+    <div class="filter-row">
+      <select id="filterGender"><option value="">Boys / girls</option><option>Boys</option><option>Girls</option><option>Mixed</option></select>
+      <select id="filterAge"><option value="">Age group</option>${AGE_GROUPS.map(a=>`<option>${a}</option>`).join('')}<option>All ages</option></select>
+    </div>
+    <div class="coach-grid" id="coachGrid"></div>
+    <div class="ask-card">
+      <h3 style="font-size:16px;margin-bottom:10px;">Ask a coach</h3>
+      <label for="askName">Your name</label>
+      <input type="text" id="askName" placeholder="First and last name">
+      <label for="askAge">Age group</label>
+      <select id="askAge"><option value="">Select...</option>${AGE_GROUPS.map(a=>`<option value="${a}">${a}</option>`).join('')}</select>
+      <label for="askTeams">Other teams (optional)</label>
+      <input type="text" id="askTeams" placeholder="Which teams are you playing for, besides your Southgate Junior team?">
+      <label for="askQ">Your question</label>
+      <textarea id="askQ" rows="5" placeholder="What would you like to ask?"></textarea>
+      <p class="error" id="askError">Add your name, age group and question first.</p>
+      <button class="submit-btn" id="submitAsk">Send question</button>
+      <div class="confirm" id="askConfirm">Thanks! Your coach has been sent this.</div>
+      <p class="error" id="askSendError">Something went wrong sending this — please try again in a moment.</p>
+    </div>
+  `;
+}
+function initials(name){ return name.split(' ').map(n=>n[0]).join(''); }
+function renderCoachCard(c){
+  return `<div class="coach-card"><div class="avatar">${initials(c.name)}</div><h4>${c.name}</h4><p>${c.role}</p><p>${c.gender} · ${c.age}</p></div>`;
+}
+function filterCoaches(){
+  const g = document.getElementById('filterGender').value;
+  const a = document.getElementById('filterAge').value;
+  const list = COACHES.filter(c=>{
+    const gOk = !g || c.gender === g || c.gender === 'Mixed';
+    const aOk = !a || c.age === a || c.age === 'All ages';
+    return gOk && aOk;
+  });
+  document.getElementById('coachGrid').innerHTML = list.length ? list.map(renderCoachCard).join('') : '<p style="color:var(--muted);">No coaches match those filters yet.</p>';
+}
+
+/* ---------------- Interaction ---------------- */
+let selectedChip = null;
+
+// Sends a submission to Chris and Nigel by email via FormSubmit — a service built for exactly
+// this: static sites with no backend can POST form data to it and it forwards a real email.
+// Note: the first time each address receives mail this way, FormSubmit sends it a one-time
+// confirmation link that must be clicked before delivery starts.
+const EMAIL_TO = 'nigellknight@gmail.com';
+const EMAIL_CC = 'chris.pearce.shc@gmail.com';
+async function sendSubmission(subject, fields){
+  const body = new FormData();
+  body.append('_subject', subject);
+  body.append('_cc', EMAIL_CC);
+  body.append('_template', 'table');
+  body.append('_captcha', 'false');
+  Object.entries(fields).forEach(([k, v]) => body.append(k, v));
+  const res = await fetch('https://formsubmit.co/ajax/' + EMAIL_TO, {
+    method: 'POST',
+    body,
+    headers: { 'Accept': 'application/json' }
+  });
+  if(!res.ok) throw new Error('FormSubmit request failed: ' + res.status);
+  return res.json();
+}
+
+function attachShell(){
+  document.getElementById('switchTrack').addEventListener('click', ()=>{
+    state.track = state.track === 'gk' ? 'outfield' : 'gk';
+    setCookie('sgj_track', state.track);
+    state.superSkill = null; state.focusSkill = null;
+    state.view = 'home';
+    render();
+  });
+  document.querySelectorAll('nav.links button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ state.view = btn.dataset.view; render(); });
+  });
+  const ageTierSelect = document.getElementById('ageTierSelect');
+  if(ageTierSelect){
+    ageTierSelect.addEventListener('change', ()=>{
+      state.ageTier = ageTierSelect.value;
+      setCookie('sgj_agetier', state.ageTier);
+      state.superSkill = null; state.focusSkill = null;
+      render();
+    });
+  }
+
+  if(state.view === 'home'){
+    document.querySelectorAll('.video-toggle[data-video]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const wrap = document.getElementById('vid-'+btn.dataset.video);
+        if(!wrap.dataset.loaded){
+          const iframe = document.createElement('iframe');
+          iframe.src = btn.dataset.embed;
+          iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media');
+          iframe.allowFullscreen = true;
+          iframe.style.border = 'none';
+          wrap.appendChild(iframe);
+          wrap.dataset.loaded = 'true';
+        }
+        wrap.classList.toggle('open');
+      });
+    });
+  }
+
+  if(state.view === 'yourskills'){
+    attachYourSkills();
+  }
+  if(state.view === 'yourcoach'){
+    filterCoaches();
+    document.getElementById('filterGender').addEventListener('change', filterCoaches);
+    document.getElementById('filterAge').addEventListener('change', filterCoaches);
+    attachAskCoach();
+  }
+}
+
+function attachYourSkills(){
+  const chips = document.querySelectorAll('.chip');
+  const zones = document.querySelectorAll('.zone');
+
+  chips.forEach(chip=>{
+    chip.addEventListener('pointerdown', e=>{
+      if(chip.classList.contains('used')) return;
+      e.preventDefault();
+      const startX = e.clientX, startY = e.clientY;
+      let dragging = false;
+      let clone = null;
+      function onMove(ev){
+        const dx = ev.clientX - startX, dy = ev.clientY - startY;
+        if(!dragging && Math.hypot(dx,dy) > 8){
+          dragging = true;
+          clone = chip.cloneNode(true);
+          clone.classList.add('dragging-clone');
+          document.body.appendChild(clone);
+          chip.style.opacity = '0.35';
+        }
+        if(dragging && clone){
+          clone.style.left = ev.clientX + 'px';
+          clone.style.top = ev.clientY + 'px';
+          zones.forEach(z=>z.classList.remove('dragover'));
+          const el = document.elementFromPoint(ev.clientX, ev.clientY);
+          const zone = el && el.closest('.zone');
+          if(zone) zone.classList.add('dragover');
+        }
+      }
+      function onUp(ev){
+        document.removeEventListener('pointermove', onMove);
+        chip.style.opacity = '';
+        zones.forEach(z=>z.classList.remove('dragover'));
+        if(dragging){
+          if(clone) clone.remove();
+          const el = document.elementFromPoint(ev.clientX, ev.clientY);
+          const zone = el && el.closest('.zone');
+          if(zone) placeSkill(zone.dataset.zone, chip.dataset.skill);
+        } else {
+          selectedChip = chip.dataset.skill;
+          chips.forEach(c=>c.style.outline='');
+          chip.style.outline = '2px solid ' + getComputedStyle(document.documentElement).getPropertyValue('--ink');
+        }
+      }
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp, {once:true});
+    });
+  });
+  zones.forEach(zone=>{
+    zone.addEventListener('click', ()=>{
+      if(selectedChip){ placeSkill(zone.dataset.zone, selectedChip); selectedChip = null; }
+    });
+  });
+
+  const superDetailBox = document.getElementById('superDetail');
+  const superDetailCount = document.getElementById('superDetailCount');
+  superDetailBox.addEventListener('input', ()=>{ superDetailCount.textContent = superDetailBox.value.length; });
+  const focusDetailBox = document.getElementById('focusDetail');
+  const focusDetailCount = document.getElementById('focusDetailCount');
+  focusDetailBox.addEventListener('input', ()=>{ focusDetailCount.textContent = focusDetailBox.value.length; });
+
+  document.getElementById('submitSkills').addEventListener('click', async ()=>{
+    const name = document.getElementById('playerName').value.trim();
+    const age = document.getElementById('playerAge').value;
+    const superDetail = superDetailBox.value.trim();
+    const focusDetail = focusDetailBox.value.trim();
+    const err = document.getElementById('skillsError');
+    const sendErr = document.getElementById('skillsSendError');
+    const btn = document.getElementById('submitSkills');
+    if(!state.superSkill || !state.focusSkill || !name || !age){
+      err.style.display = 'block'; return;
+    }
+    err.style.display = 'none';
+    sendErr.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Sending...';
+    try {
+      await sendSubmission(`Southgate Juniors: Your Skills — ${name}`, {
+        Page: 'Your Skills',
+        'Player name': name,
+        'Age group': age,
+        Track: state.track === 'gk' ? 'Goalkeeper' : 'Outfield',
+        'Skills shown (age tier)': tierLabel(),
+        'Super skill': skillName(state.superSkill),
+        'Proud of (super strength)': superDetail,
+        'Focus area': skillName(state.focusSkill),
+        'Focus for improvement': focusDetail,
+      });
+      document.getElementById('skillsConfirm').style.display = 'block';
+    } catch(e){
+      sendErr.style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Tell my coach';
+    }
+  });
+}
+function placeSkill(zone, skillId){
+  if(zone === 'super') state.superSkill = skillId;
+  if(zone === 'focus') state.focusSkill = skillId;
+  render();
+  // re-focus the your skills view state after re-render
+  state.view = 'yourskills';
+}
+
+function attachAskCoach(){
+  document.getElementById('submitAsk').addEventListener('click', async ()=>{
+    const name = document.getElementById('askName').value.trim();
+    const age = document.getElementById('askAge').value;
+    const teams = document.getElementById('askTeams').value.trim();
+    const q = document.getElementById('askQ').value.trim();
+    const err = document.getElementById('askError');
+    const sendErr = document.getElementById('askSendError');
+    const btn = document.getElementById('submitAsk');
+    if(!name || !age || !q){ err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    sendErr.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Sending...';
+    try {
+      await sendSubmission(`Southgate Juniors: Your Coach — ${name}`, {
+        Page: 'Your Coach',
+        'Player name': name,
+        'Age group': age,
+        Track: state.track === 'gk' ? 'Goalkeeper' : 'Outfield',
+        'Other teams': teams,
+        Question: q,
+      });
+      document.getElementById('askConfirm').style.display = 'block';
+    } catch(e){
+      sendErr.style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send question';
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
