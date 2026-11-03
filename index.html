@@ -53,12 +53,14 @@
   .switch-btn{background:none;border:1px solid #ffffff3a;color:#cfcfcb;font-size:12px;padding:7px 12px;border-radius:20px;font-weight:600;}
   .switch-btn:hover{border-color:#fff;color:#fff;}
   .about{margin:0 0 4px;color:var(--muted);font-size:14px;}
-  .tier-picker{display:flex;align-items:center;gap:8px;font-size:13px;color:#fff;font-weight:800;letter-spacing:.2px;}
-  .tier-select{background:var(--red);border:2px solid #fff;color:#fff;font-size:14px;padding:6px 12px;border-radius:20px;font-weight:800;font-family:inherit;cursor:pointer;animation:tierPulse 2s ease-in-out 3;}
-  .tier-select:hover{background:#fff;color:#161616;}
-  .tier-select option{background:#161616;color:#fff;}
-  @keyframes tierPulse{0%,100%{box-shadow:0 0 0 0 #ffffff00}50%{box-shadow:0 0 0 6px #ffffff40}}
+  /* Group filter: a labelled dropdown field (white, with a chevron), set apart from the page links by a divider */
+  .tier-picker{display:flex;flex-direction:column;gap:3px;font-size:11px;color:#cfcfcb;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-left:1px solid #ffffff3a;padding-left:16px;margin-left:6px;}
+  .tier-select{appearance:none;-webkit-appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23161616' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--ink);border:2px solid #fff;font-size:14px;padding:6px 34px 6px 12px;border-radius:6px;font-weight:700;font-family:inherit;cursor:pointer;min-width:170px;text-transform:none;letter-spacing:0;animation:tierPulse 2s ease-in-out 3;}
+  .tier-select:hover,.tier-select:focus{border-color:var(--red);outline:none;}
+  .tier-select option{background:#fff;color:#161616;}
+  @keyframes tierPulse{0%,100%{box-shadow:0 0 0 0 #ffffff00}50%{box-shadow:0 0 0 5px #ffffff55}}
   @media (prefers-reduced-motion:reduce){.tier-select{animation:none}}
+  @media (max-width:700px){.tier-picker{border-left:none;padding-left:0;margin-left:0;width:100%;}.tier-select{width:100%;}}
   /* ---------- Shell ---------- */
   .page{max-width:1000px;margin:0 auto;padding:28px 18px 60px;}
   .hero{display:flex;gap:20px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:28px;}
