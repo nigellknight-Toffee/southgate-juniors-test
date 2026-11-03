@@ -67,13 +67,15 @@
   .hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.5;}
   .section-label{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:10px;}
   /* ---------- Skill cards ---------- */
-  .skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
-  .skill-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .skill-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+  @media (max-width:760px){.skill-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media (max-width:480px){.skill-grid{grid-template-columns:1fr;}}
+  .skill-card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
   .skill-card .tag{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin:12px 0 8px 14px;text-transform:uppercase;letter-spacing:.03em;}
   .tag.inpos{background:var(--green-bg);color:var(--green);}
   .tag.outpos{background:var(--red-bg);color:var(--red-dark);}
   .tag.gk{background:#FDF3E3;color:#8a6110;}
-  .skill-card h3{font-size:16px;padding:0 14px;margin-bottom:10px;}
+  .skill-card h3{font-size:16px;padding:0 14px;margin-bottom:10px;flex:1;}
   .skill-card .video-toggle{width:100%;text-align:left;background:var(--ink);color:#fff;border:none;padding:10px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;}
   .skill-card .video-toggle:before{content:'▶';font-size:10px;}
   .skill-card .video-wrap{position:relative;width:100%;padding-top:56.25%;background:#000;display:none;}
@@ -410,9 +412,7 @@ function renderView(){
 }
 
 function renderHome(){
-  const headCoach = state.track === 'gk'
-    ? {name:'Sam Whitfield', role:'Head GK Coach'}
-    : {name:'Chris Pearce', role:'Hockey Director'};
+  const headCoach = {name:'Chris Pearce', role:'Hockey Director'};
   const skills = skillsForTrack();
   return `
     <div class="hero">
@@ -566,20 +566,45 @@ let selectedChip = null;
 // confirmation link that must be clicked before delivery starts.
 const EMAIL_TO = 'nigellknight@gmail.com';
 const EMAIL_CC = 'chris.pearce.shc@gmail.com';
+let lastSend = null;
 async function sendSubmission(subject, fields){
+  lastSend = [subject, fields];
   const body = new FormData();
   body.append('_subject', subject);
   body.append('_cc', EMAIL_CC);
   body.append('_template', 'table');
   body.append('_captcha', 'false');
   Object.entries(fields).forEach(([k, v]) => body.append(k, v));
-  const res = await fetch('https://formsubmit.co/ajax/' + EMAIL_TO, {
-    method: 'POST',
-    body,
-    headers: { 'Accept': 'application/json' }
-  });
-  if(!res.ok) throw new Error('FormSubmit request failed: ' + res.status);
-  return res.json();
+  let lastErr;
+  for(let attempt = 0; attempt < 3; attempt++){
+    try {
+      const ctl = new AbortController();
+      const timer = setTimeout(()=>ctl.abort(), 12000);
+      const res = await fetch('https://formsubmit.co/ajax/' + EMAIL_TO, {
+        method: 'POST',
+        body,
+        headers: { 'Accept': 'application/json' },
+        signal: ctl.signal
+      });
+      clearTimeout(timer);
+      if(!res.ok) throw new Error('FormSubmit request failed: ' + res.status);
+      return await res.json();
+    } catch(e){
+      lastErr = e;
+      await new Promise(r=>setTimeout(r, 1500));
+    }
+  }
+  throw lastErr;
+}
+// If the automatic send fails (e.g. the free mail service is down), offer the same message as a
+// ready-written email the person can send from their own email app.
+function mailtoFallback(subject, fields){
+  const text = Object.entries(fields).filter(([k,v])=>v).map(([k,v])=>k+': '+v).join('\n');
+  return 'mailto:'+EMAIL_TO+'?cc='+encodeURIComponent(EMAIL_CC)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(text);
+}
+function showSendError(el, subject, fields){
+  el.innerHTML = 'Sorry, we couldn\'t send this automatically. <a href="'+mailtoFallback(subject, fields)+'">Click here to email it instead</a>.';
+  el.style.display = 'block';
 }
 
 function attachShell(){
@@ -719,7 +744,7 @@ function attachYourSkills(){
       });
       document.getElementById('skillsConfirm').style.display = 'block';
     } catch(e){
-      sendErr.style.display = 'block';
+      showSendError(sendErr, ...lastSend);
     } finally {
       btn.disabled = false; btn.textContent = 'Tell my coach';
     }
@@ -759,7 +784,7 @@ function attachAskCoach(){
       });
       document.getElementById('askConfirm').style.display = 'block';
     } catch(e){
-      sendErr.style.display = 'block';
+      showSendError(sendErr, ...lastSend);
     } finally {
       btn.disabled = false; btn.textContent = 'Send question';
     }
