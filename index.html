@@ -52,6 +52,7 @@
   nav.links button:hover:not(.active){background:#ffffff14;}
   .switch-btn{background:none;border:1px solid #ffffff3a;color:#cfcfcb;font-size:12px;padding:7px 12px;border-radius:20px;font-weight:600;}
   .switch-btn:hover{border-color:#fff;color:#fff;}
+  .about{margin:0 0 4px;color:var(--muted);font-size:14px;}
   .tier-picker{display:flex;align-items:center;gap:8px;font-size:13px;color:#fff;font-weight:800;letter-spacing:.2px;}
   .tier-select{background:var(--red);border:2px solid #fff;color:#fff;font-size:14px;padding:6px 12px;border-radius:20px;font-weight:800;font-family:inherit;cursor:pointer;animation:tierPulse 2s ease-in-out 3;}
   .tier-select:hover{background:#fff;color:#161616;}
@@ -174,16 +175,23 @@ const VIMEO = id => `https://player.vimeo.com/video/${id}?playsinline=1&title=0&
 // "12+" tier: the original broad skill categories, all 10 using the Vimeo clips England Hockey
 // supplied for v1 (recovered from project history — these are the IDs that actually worked).
 const OUTFIELD_12PLUS = [
-  {id:'receiving', name:'Receiving', cat:'inpos', embed:VIMEO('631820134'), desc:"Getting the ball under control cleanly, first time."},
-  {id:'carrying', name:'Carrying', cat:'inpos', embed:VIMEO('630881654'), desc:"Moving the ball forward under control at pace."},
-  {id:'passing', name:'Passing', cat:'inpos', embed:VIMEO('630920544'), desc:"Moving the ball accurately to a teammate."},
-  {id:'leading', name:'Leading', cat:'inpos', embed:VIMEO('630846665'), desc:"Moving into space to offer an option, without the ball."},
-  {id:'goalscoring', name:'Goalscoring', cat:'inpos', embed:VIMEO('630848004'), desc:"Finding the back of the net."},
-  {id:'positioning', name:'Positioning & Movement', cat:'outpos', embed:VIMEO('637097682'), desc:"Being in the best spot to help the team defend."},
-  {id:'marking', name:'Marking', cat:'outpos', embed:VIMEO('633199572'), desc:"Staying tight to deny the opponent the ball."},
-  {id:'intercepting', name:'Intercepting', cat:'outpos', embed:VIMEO('635063375'), desc:"Winning the ball by reading and cutting out a pass."},
-  {id:'closing', name:'Closing Down Space', cat:'outpos', embed:VIMEO('633023245'), desc:"Pressuring the ball carrier to dictate their options."},
-  {id:'tackling', name:'Tackling', cat:'outpos', embed:VIMEO('633020508'), desc:"Winning the ball off an opponent in a challenge."},
+  {id:'receiving', name:'Receiving Across the Body', cat:'inpos', embed:VIMEO('631820134'), desc:"Getting the ball under control cleanly, first time."},
+  {id:'postup', name:'Post Up', cat:'inpos', embed:VIMEO('630883880'), desc:"Receiving the ball when posting up for it."},
+  {id:'carrying', name:'Forehand with Vision', cat:'inpos', embed:VIMEO('630881654'), desc:"Moving the ball forward under control at pace."},
+  {id:'passing', name:'Forehand Hitting', cat:'inpos', embed:VIMEO('630920544'), desc:"Moving the ball accurately to a teammate."},
+  {id:'pushpass', name:'Push Pass', cat:'inpos', embed:VIMEO('706495239'), desc:"Moving the ball accurately to a teammate with a push."},
+  {id:'slappass', name:'Slap Pass', cat:'inpos', embed:VIMEO('630851665'), desc:"Moving the ball to a teammate with a slap."},
+  {id:'leading', name:'Blind Spot', cat:'inpos', embed:VIMEO('630846665'), desc:"Moving into space to offer an option, without the ball."},
+  {id:'leadingwidth', name:'Leading to the Width', cat:'inpos', embed:VIMEO('630849519'), desc:"Moving wide into space to offer an option, without the ball."},
+  {id:'goalscoring', name:'Spin Shot', cat:'inpos', embed:VIMEO('630848004'), desc:"Finding the back of the net."},
+  {id:'positioning', name:'Help Side', cat:'outpos', embed:VIMEO('637097682'), desc:"Being in the best spot to help the team defend."},
+  {id:'marking', name:'Block Marking', cat:'outpos', embed:VIMEO('633199572'), desc:"Staying tight to deny the opponent the ball."},
+  {id:'ballside', name:'Ball Side Marking', cat:'outpos', embed:VIMEO('633019807'), desc:"Marking from the ball side to deny the opponent the ball."},
+  {id:'crucialmarking', name:'Crucial Moment Marking', cat:'outpos', embed:VIMEO('633019263'), desc:"Marking tight at the moment it matters most."},
+  {id:'intercepting', name:'Intercept on the Forehand', cat:'outpos', embed:VIMEO('635063375'), desc:"Winning the ball by reading and cutting out a pass."},
+  {id:'closing', name:'Blocking', cat:'outpos', embed:VIMEO('633023245'), desc:"Pressuring the ball carrier to dictate their options."},
+  {id:'tackling', name:'Forehand Block Tackle', cat:'outpos', embed:VIMEO('633020508'), desc:"Winning the ball off an opponent in a challenge."},
+  {id:'pcrunner', name:'Number 1 Runner (penalty corner defence)', cat:'outpos', embed:VIMEO('691794782'), desc:"The first runner when defending a penalty corner."},
 ];
 // Age-specific Highly Skilled Actions, sourced from England Hockey's Hockey Hub (hockey_iq page),
 // "Priority Highly Skilled Actions" lists for each age band — each linking straight to that
@@ -239,6 +247,14 @@ const OUTFIELD_U12 = [
   {id:'flattrianglemarking', name:'Flat Triangle Marking', cat:'outpos', embed:YOUTUBE('d8rC9m1-pkw'), desc:"How to mark a player to win the ball."},
 ];
 const OUTFIELD_TIERS = { u8: OUTFIELD_U8, u10: OUTFIELD_U10, u12: OUTFIELD_U12, '12plus': OUTFIELD_12PLUS };
+// Southgate group (top-bar selector) -> which Hockey Hub skills set to show.
+function tierForGroup(g){
+  if(!g || g==='gk') return '12plus';
+  if(g==='u8') return 'u8';
+  if(g==='u10b'||g==='u10g') return 'u10';
+  if(g==='u12b'||g==='u12g') return 'u12';
+  return '12plus';
+}
 const AGE_TIERS = [
   {id:'u8', label:'U8'},
   {id:'u10', label:'U10'},
@@ -255,19 +271,54 @@ const GK_SKILLS = [
   {id:'secondphase', name:'2nd Phase Play', cat:'gk', embed:VIMEO('634999678'), desc:"Reacting fast when the ball stays in the danger zone."},
   {id:'onevone', name:'One vs One', cat:'gk', embed:VIMEO('634998492'), desc:"Facing down an attacker with a clear run at goal."},
 ];
-const COACHES = [
-  {name:'Chris Pearce', role:'Hockey Director', gender:'Mixed', age:'All ages'},
-  {name:'Sam Whitfield', role:'Head GK Coach', gender:'Mixed', age:'All ages'},
-  {name:'Priya Anand', role:'Coach', gender:'Girls', age:'U8'},
-  {name:'Tom Realini', role:'Coach', gender:'Boys', age:'U8'},
-  {name:'Ella Marchetti', role:'Coach', gender:'Girls', age:'U10'},
-  {name:'Ben Okafor', role:'Coach', gender:'Boys', age:'U10'},
-  {name:'Grace Liu', role:'Coach', gender:'Girls', age:'U12'},
-  {name:'Josh Fenwick', role:'Coach', gender:'Boys', age:'U12'},
-  {name:'Nigel Knight', role:'Coach', gender:'Boys', age:'U16'},
-  {name:'Amara Osei', role:'Coach', gender:'Girls', age:'U14'},
+// Your Coach data — Southgate Hockey Club juniors, from Chris Pearce's validated spreadsheet (30 Oct 2026).
+// Rows marked "unconfirmed" were not in Chris's returned sheet and come from Nigel's 20 Oct list: confirm with Chris.
+const COACH_GROUPS = [
+  {id:'u8',   label:'U8',        teams:['Crocs','Gators','Caymans','Geckos']},
+  {id:'u10b', label:'U10 Boys',  teams:['Cobras','Pythons']},
+  {id:'u10g', label:'U10 Girls', teams:['Boas','Adders','Mambas']},
+  {id:'u12b', label:'U12 Boys',  teams:['Eagles','Falcons']},
+  {id:'u12g', label:'U12 Girls', teams:['Rhinos','Zebras','Buffaloes']},
+  {id:'u14b', label:'U14 Boys',  teams:['Whales']},
+  {id:'u14g', label:'U14 Girls', teams:['Dolphins','Penguins']},
+  {id:'u16b', label:'U16 Boys',  teams:['Lions']},
+  {id:'u16g', label:'U16 Girls', teams:['Jaguars']}, // TO CONFIRM: Chris says Jaguars, Nigel's team is Pumas
+  {id:'gk',   label:'Goalkeepers', teams:[]},
 ];
-const AGE_GROUPS = ['U8','U10','U12','U14','U16'];
+// groups = every group the person coaches; teams = {groupId: team} where a coach is tied to one team.
+// A coach with no team in a group is shown under every team of that group.
+const COACHES = [
+  {name:'Chris Pearce', role:'Hockey Director', groups:['u8','u10b','u10g','u12b','u12g','u14b','u14g','u16b','u16g','gk']},
+  {name:'Andrew Westbrook', role:'Coach', groups:['u8']},
+  {name:'Neil Commons', role:'Coach', groups:['u8']},
+  {name:'Ronald van Leeven', role:'Coach', groups:['u8']},
+  {name:'Aidan Commons', role:'Coach', groups:['u8','u10b']},
+  {name:'Luke Ward', role:'Coach', groups:['u8','gk']},
+  {name:'James Smith', role:'Coach', groups:['u8','u12b','u16b']}, // u12b, u16b unconfirmed
+  {name:'Andrew Fell (Felly)', role:'Coach', groups:['u10b']},
+  {name:'Matt McDonnell', role:'Coach', groups:['u10b','u14g']},
+  {name:'Lee Eldridge', role:'Coach', groups:['u10g']},
+  {name:'Rajeev Menon', role:'Coach', groups:['u10g','u12g']}, // u12g unconfirmed
+  {name:'Sofia Martin', role:'Coach', groups:['u10g','u14b']},
+  {name:'Rob Schilling', role:'Coach', groups:['u10g']},
+  {name:'Webby', role:'Coach', groups:['u12b']},
+  {name:'James Clifton', role:'Coach', groups:['u12b','u16b']}, // u16b unconfirmed
+  {name:'Olivia Richardson (Liv)', role:'Coach', groups:['u12b','u12g','u16g'], teams:{u12g:'Rhinos'}}, // all unconfirmed
+  {name:'Bhupinder McJennett (Bhu)', role:'Coach', groups:['u12g'], teams:{u12g:'Zebras'}}, // unconfirmed
+  {name:'Andrew Buckle (Andy B)', role:'Coach', groups:['u12g'], teams:{u12g:'Buffaloes'}}, // unconfirmed
+  {name:'Lucy Cope', role:'Coach', groups:['u12g','u14g']}, // u12g unconfirmed
+  {name:'Charlie Blomquist', role:'Coach', groups:['u12g']}, // unconfirmed (per Chris email 21 Oct)
+  {name:'William Biggins', role:'Coach', groups:['u14b']},
+  {name:'Josh Laney', role:'Coach', groups:['u14b']},
+  {name:'Harry Haynes', role:'Coach', groups:['u14g']},
+  {name:'Olive James', role:'Coach', groups:['u14g']},
+  {name:'Mo Gandhi', role:'Coach', groups:['u16b']}, // unconfirmed
+  {name:'Nigel Knight', role:'Coach', groups:['u16g']}, // unconfirmed
+  {name:'Gavin Kay', role:'Coach', groups:['u16g']}, // unconfirmed
+  {name:'Adam Mulholland', role:'Coach', groups:['u16g']}, // unconfirmed; "A" team only per Chris
+  {name:'Paul Creeley', role:'Coach', groups:['gk']},
+  {name:'Miriam Dirnhuber', role:'Coach', groups:['gk']},
+];
 
 /* ---------------- State ---------------- */
 function getCookie(name){
@@ -280,18 +331,20 @@ function setCookie(name, val){
 let state = {
   track: getCookie('sgj_track'), // 'outfield' | 'gk' | null
   view: 'home',
-  ageTier: getCookie('sgj_agetier') || '12plus', // 'u8' | 'u10' | 'u12' | '12plus' — outfield skill-list filter
+  group: getCookie('sgj_group') || '', // top-bar "What's your group?" — a COACH_GROUPS id; drives Your Skills and Your Coach
+  coachTeam: '', // optional team filter on Your Coach (kept in memory only)
   superSkill: null,
   focusSkill: null,
 };
 
 // Age-tier filtering only applies to outfield skills — England Hockey's Hockey Hub doesn't
 // publish an age-graded goalkeeping skill list, so GK players always see the same 6 GK skills.
-function skillsForTrack(){ return state.track === 'gk' ? GK_SKILLS : (OUTFIELD_TIERS[state.ageTier] || OUTFIELD_12PLUS); }
+function skillsForTrack(){ return state.track === 'gk' ? GK_SKILLS : (OUTFIELD_TIERS[tierForGroup(state.group)] || OUTFIELD_12PLUS); }
+function groupLabel(id){ const g = COACH_GROUPS.find(x=>x.id===id); return g ? g.label : ''; }
 function tagLabel(cat){ return cat === 'inpos' ? 'In possession' : cat === 'outpos' ? 'Out of possession' : 'Goalkeeping'; }
 function tierLabel(){
   if(state.track === 'gk') return 'Goalkeeper (all ages)';
-  const t = AGE_TIERS.find(x=>x.id===state.ageTier);
+  const t = AGE_TIERS.find(x=>x.id===tierForGroup(state.group));
   return t ? t.label : '12+';
 }
 
@@ -320,6 +373,8 @@ function attachLanding(){
     btn.addEventListener('click', ()=>{
       state.track = btn.dataset.track;
       setCookie('sgj_track', state.track);
+      if(state.track === 'gk'){ state.group = 'gk'; setCookie('sgj_group', 'gk'); }
+      else if(state.group === 'gk'){ state.group = ''; setCookie('sgj_group', ''); }
       state.view = 'home';
       render();
     });
@@ -327,14 +382,12 @@ function attachLanding(){
 }
 
 function renderShell(){
-  const other = state.track === 'gk' ? 'outfield' : 'gk';
-  const otherLabel = state.track === 'gk' ? 'Switch to Outfield' : 'Switch to Goalkeeper';
-  const tierPicker = state.track !== 'gk' ? `
+  const groupPicker = `
         <label class="tier-picker">What's your group?
-          <select id="ageTierSelect" class="tier-select">
-            ${AGE_TIERS.map(t=>`<option value="${t.id}" ${state.ageTier===t.id?'selected':''}>${t.label}</option>`).join('')}
+          <select id="groupSelect" class="tier-select">
+            <option value="">Choose your group</option>${groupOptions(state.group)}
           </select>
-        </label>` : '';
+        </label>`;
   return `
     <div class="topbar">
       <div class="topbar-inner">
@@ -345,8 +398,7 @@ function renderShell(){
           <button data-view="yourskills" class="${state.view==='yourskills'?'active':''}">Your skills</button>
           <button data-view="yourcoach" class="${state.view==='yourcoach'?'active':''}">Your coach</button>
         </nav>
-        ${tierPicker}
-        <button class="switch-btn" id="switchTrack">${otherLabel}</button>
+        ${groupPicker}
       </div>
     </div>
     <div class="page">${renderView()}</div>`;
@@ -410,8 +462,7 @@ function renderYourSkills(){
     <div class="form-card">
       <label for="playerName">Your name</label>
       <input type="text" id="playerName" placeholder="First and last name">
-      <label for="playerAge">Age group</label>
-      <select id="playerAge"><option value="">Select...</option>${AGE_GROUPS.map(a=>`<option value="${a}">${a}</option>`).join('')}</select>
+      <p class="about">${state.group ? `Group: <strong>${groupLabel(state.group)}</strong>` : 'Choose your group at the top of the page first.'}</p>
       <label for="superDetail">Proud of your super strength</label>
       <p class="hint">What are you particularly proud of with that super strength? (optional)</p>
       <textarea id="superDetail" rows="2" maxlength="100" placeholder="Optional — e.g. My push pass is really accurate now."></textarea>
@@ -420,7 +471,7 @@ function renderYourSkills(){
       <p class="hint">What do you specifically need to focus on from that skill? (optional)</p>
       <textarea id="focusDetail" rows="2" maxlength="100" placeholder="Optional — e.g. Getting faster in 1-on-1 tackles."></textarea>
       <div class="char-count"><span id="focusDetailCount">0</span>/100</div>
-      <p class="error" id="skillsError">Pick a super skill and a focus area, add your name and age group first.</p>
+      <p class="error" id="skillsError">Pick a super skill and a focus area, add your name and choose your group (top of the page) first.</p>
       <button class="submit-btn" id="submitSkills">Tell my coach</button>
       <div class="confirm" id="skillsConfirm">Thanks! Your coach has been sent this.</div>
       <p class="error" id="skillsSendError">Something went wrong sending this — please try again in a moment.</p>
@@ -436,47 +487,76 @@ function renderChip(s){
   return `<button class="chip ${s.cat} ${used?'used':''}" data-skill="${s.id}"><span class="dot"></span>${s.name}</button>`;
 }
 
+function groupOptions(selected){
+  return COACH_GROUPS.map(g=>`<option value="${g.id}" ${selected===g.id?'selected':''}>${g.label}</option>`).join('');
+}
+function teamOptions(gid, selected, allLabel){
+  const g = COACH_GROUPS.find(x=>x.id===gid);
+  const teams = g ? g.teams : [];
+  return `<option value="">${allLabel}</option>` + teams.map(t=>`<option ${selected===t?'selected':''}>${t}</option>`).join('');
+}
+function teamFilterHtml(){
+  const g = COACH_GROUPS.find(x=>x.id===state.group);
+  if(!g || g.teams.length < 2) return '<div class="filter-row" id="teamRow" style="display:none"></div>';
+  return `<div class="filter-row" id="teamRow"><select id="coachTeam" aria-label="Narrow to a team">${teamOptions(state.group, state.coachTeam, 'All teams in '+g.label)}</select></div>`;
+}
+function askAboutText(){
+  if(!state.group) return 'Choose your group at the top of the page first.';
+  return 'Asking about: <strong>' + groupLabel(state.group) + '</strong>' + (state.coachTeam ? ' · <strong>' + state.coachTeam + '</strong>' : '');
+}
 function renderYourCoach(){
   return `
     <h2 style="margin-bottom:6px;">Your coach</h2>
-    <p style="color:var(--muted);margin-top:0;">Sample coach list shown here — Chris will supply the real roster.</p>
-    <div class="filter-row">
-      <select id="filterGender"><option value="">Boys / girls</option><option>Boys</option><option>Girls</option><option>Mixed</option></select>
-      <select id="filterAge"><option value="">Age group</option>${AGE_GROUPS.map(a=>`<option>${a}</option>`).join('')}<option>All ages</option></select>
-    </div>
+    <p style="color:var(--muted);margin-top:0;">${state.group ? `Showing coaches for <strong>${groupLabel(state.group)}</strong>.` : "Choose your group at the top of the page to see your coaches."}</p>
+    ${teamFilterHtml()}
     <div class="coach-grid" id="coachGrid"></div>
     <div class="ask-card">
       <h3 style="font-size:16px;margin-bottom:10px;">Ask a coach</h3>
       <label for="askName">Your name</label>
       <input type="text" id="askName" placeholder="First and last name">
-      <label for="askAge">Age group</label>
-      <select id="askAge"><option value="">Select...</option>${AGE_GROUPS.map(a=>`<option value="${a}">${a}</option>`).join('')}</select>
+      <p class="about" id="askAbout">${askAboutText()}</p>
       <label for="askTeams">Other teams (optional)</label>
       <input type="text" id="askTeams" placeholder="Which teams are you playing for, besides your Southgate Junior team?">
       <label for="askQ">Your question</label>
       <textarea id="askQ" rows="5" placeholder="What would you like to ask?"></textarea>
-      <p class="error" id="askError">Add your name, age group and question first.</p>
+      <p class="error" id="askError">Add your name and question, and choose your group at the top of the page, first.</p>
       <button class="submit-btn" id="submitAsk">Send question</button>
-      <div class="confirm" id="askConfirm">Thanks! Your coach has been sent this.</div>
+      <div class="confirm" id="askConfirm">Thanks! Your question has been sent to the club, who will pass it to your coach.</div>
       <p class="error" id="askSendError">Something went wrong sending this — please try again in a moment.</p>
     </div>
   `;
 }
 function initials(name){ return name.split(' ').map(n=>n[0]).join(''); }
-function renderCoachCard(c){
-  return `<div class="coach-card"><div class="avatar">${initials(c.name)}</div><h4>${c.name}</h4><p>${c.role}</p><p>${c.gender} · ${c.age}</p></div>`;
+function renderCoachCard(c, gid){
+  const team = c.teams && c.teams[gid];
+  const sub = team ? `${team} coach` : c.role;
+  return `<div class="coach-card"><div class="avatar">${initials(c.name.replace(/\(.*?\)/g,'').trim())}</div><h4>${c.name}</h4><p>${sub}</p></div>`;
 }
 function filterCoaches(){
-  const g = document.getElementById('filterGender').value;
-  const a = document.getElementById('filterAge').value;
-  const list = COACHES.filter(c=>{
-    const gOk = !g || c.gender === g || c.gender === 'Mixed';
-    const aOk = !a || c.age === a || c.age === 'All ages';
-    return gOk && aOk;
-  });
-  document.getElementById('coachGrid').innerHTML = list.length ? list.map(renderCoachCard).join('') : '<p style="color:var(--muted);">No coaches match those filters yet.</p>';
+  const gid = state.group;
+  const team = state.coachTeam;
+  const grid = document.getElementById('coachGrid');
+  if(!gid){
+    const chris = COACHES.filter(c=>c.groups.length > 9);
+    grid.innerHTML = chris.map(c=>renderCoachCard(c, null)).join('');
+    return;
+  }
+  let list = COACHES.filter(c=>c.groups.includes(gid));
+  if(team){
+    // keep coaches tied to this team, plus coaches not tied to any team in this group
+    list = list.filter(c=>{
+      const t = c.teams && c.teams[gid];
+      return !t || t === team;
+    });
+    // team-specific coaches first (after Chris)
+    list.sort((a,b)=>{
+      const ta = (a.teams && a.teams[gid]) ? 0 : 1;
+      const tb = (b.teams && b.teams[gid]) ? 0 : 1;
+      return (a.role==='Hockey Director' ? -1 : 0) - (b.role==='Hockey Director' ? -1 : 0) || ta - tb;
+    });
+  }
+  grid.innerHTML = list.length ? list.map(c=>renderCoachCard(c, gid)).join('') : '<p style="color:var(--muted);">No coaches match those filters yet.</p>';
 }
-
 /* ---------------- Interaction ---------------- */
 let selectedChip = null;
 
@@ -503,25 +583,19 @@ async function sendSubmission(subject, fields){
 }
 
 function attachShell(){
-  document.getElementById('switchTrack').addEventListener('click', ()=>{
-    state.track = state.track === 'gk' ? 'outfield' : 'gk';
-    setCookie('sgj_track', state.track);
-    state.superSkill = null; state.focusSkill = null;
-    state.view = 'home';
-    render();
-  });
   document.querySelectorAll('nav.links button').forEach(btn=>{
     btn.addEventListener('click', ()=>{ state.view = btn.dataset.view; render(); });
   });
-  const ageTierSelect = document.getElementById('ageTierSelect');
-  if(ageTierSelect){
-    ageTierSelect.addEventListener('change', ()=>{
-      state.ageTier = ageTierSelect.value;
-      setCookie('sgj_agetier', state.ageTier);
-      state.superSkill = null; state.focusSkill = null;
-      render();
-    });
-  }
+  document.getElementById('groupSelect').addEventListener('change', e=>{
+    state.group = e.target.value;
+    state.coachTeam = '';
+    setCookie('sgj_group', state.group);
+    // Goalkeepers is a group that switches to the goalkeeper zone; any other group is the outfield zone.
+    state.track = state.group === 'gk' ? 'gk' : 'outfield';
+    setCookie('sgj_track', state.track);
+    state.superSkill = null; state.focusSkill = null;
+    render();
+  });
 
   if(state.view === 'home'){
     document.querySelectorAll('.video-toggle[data-video]').forEach(btn=>{
@@ -546,8 +620,12 @@ function attachShell(){
   }
   if(state.view === 'yourcoach'){
     filterCoaches();
-    document.getElementById('filterGender').addEventListener('change', filterCoaches);
-    document.getElementById('filterAge').addEventListener('change', filterCoaches);
+    const ct = document.getElementById('coachTeam');
+    if(ct) ct.addEventListener('change', e=>{
+      state.coachTeam = e.target.value;
+      document.getElementById('askAbout').innerHTML = askAboutText();
+      filterCoaches();
+    });
     attachAskCoach();
   }
 }
@@ -615,7 +693,7 @@ function attachYourSkills(){
 
   document.getElementById('submitSkills').addEventListener('click', async ()=>{
     const name = document.getElementById('playerName').value.trim();
-    const age = document.getElementById('playerAge').value;
+    const age = groupLabel(state.group);
     const superDetail = superDetailBox.value.trim();
     const focusDetail = focusDetailBox.value.trim();
     const err = document.getElementById('skillsError');
@@ -631,9 +709,9 @@ function attachYourSkills(){
       await sendSubmission(`Southgate Juniors: Your Skills — ${name}`, {
         Page: 'Your Skills',
         'Player name': name,
-        'Age group': age,
+        Group: age,
         Track: state.track === 'gk' ? 'Goalkeeper' : 'Outfield',
-        'Skills shown (age tier)': tierLabel(),
+        'Skills shown': tierLabel(),
         'Super skill': skillName(state.superSkill),
         'Proud of (super strength)': superDetail,
         'Focus area': skillName(state.focusSkill),
@@ -658,13 +736,14 @@ function placeSkill(zone, skillId){
 function attachAskCoach(){
   document.getElementById('submitAsk').addEventListener('click', async ()=>{
     const name = document.getElementById('askName').value.trim();
-    const age = document.getElementById('askAge').value;
+    const group = state.group;
+    const team = state.coachTeam;
     const teams = document.getElementById('askTeams').value.trim();
     const q = document.getElementById('askQ').value.trim();
     const err = document.getElementById('askError');
     const sendErr = document.getElementById('askSendError');
     const btn = document.getElementById('submitAsk');
-    if(!name || !age || !q){ err.style.display = 'block'; return; }
+    if(!name || !group || !q){ err.style.display = 'block'; return; }
     err.style.display = 'none';
     sendErr.style.display = 'none';
     btn.disabled = true; btn.textContent = 'Sending...';
@@ -672,7 +751,8 @@ function attachAskCoach(){
       await sendSubmission(`Southgate Juniors: Your Coach — ${name}`, {
         Page: 'Your Coach',
         'Player name': name,
-        'Age group': age,
+        Group: (COACH_GROUPS.find(g=>g.id===group)||{}).label || group,
+        Team: team || 'Not specified',
         Track: state.track === 'gk' ? 'Goalkeeper' : 'Outfield',
         'Other teams': teams,
         Question: q,
