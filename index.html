@@ -86,6 +86,9 @@
   .skill-card .video-toggle:before{content:'▶';font-size:10px;}
   .skill-card .video-wrap{position:relative;width:100%;padding-top:56.25%;background:#000;display:none;}
   .skill-card .video-wrap.open{display:block;}
+  /* Vimeo hides volume, captions and full screen behind a chevron when its player is narrow, so a Vimeo card widens to the full row while its video is open. */
+  .skill-card.wide{grid-column:1 / -1;}
+  .skill-card.wide .video-wrap{max-width:640px;width:100%;margin:0 auto;padding-top:0;aspect-ratio:16/9;}
   .skill-card .video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
   /* ---------- Your Skills ---------- */
   .zones{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:26px;}
@@ -789,6 +792,7 @@ function attachShell(){
           wrap.dataset.loaded = 'true';
         }
         wrap.classList.toggle('open');
+        if(btn.dataset.embed.includes('vimeo')) btn.closest('.skill-card').classList.toggle('wide', wrap.classList.contains('open'));
       });
     });
   }
