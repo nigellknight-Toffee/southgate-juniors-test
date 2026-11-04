@@ -562,34 +562,32 @@ function filterCoaches(){
 /* ---------------- Interaction ---------------- */
 let selectedChip = null;
 
-// Sends a submission to Chris and Nigel by email via FormSubmit — a service built for exactly
-// this: static sites with no backend can POST form data to it and it forwards a real email.
-// Note: the first time each address receives mail this way, FormSubmit sends it a one-time
-// confirmation link that must be clicked before delivery starts.
-const EMAIL_TO = 'nigellknight@gmail.com';
-const EMAIL_CC = 'chris.pearce.shc@gmail.com';
+// Sends a submission by email via Formspree (https://formspree.io), a form-backend service: static sites
+// with no server of their own POST form data to it and it emails the result to the form's recipient.
+// Testing: the form's recipient is the shared club-tool mailbox only (no forwarding).
+// Deployment: that mailbox forwards to Chris and Lucy (set up in the mailbox, not in this code).
+// The form ID is public by design (it identifies the form; it is not a secret).
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xgaarnoz';
+const FALLBACK_EMAIL = 'SCHJuniorHockey@toffeeai.uk'; // used only by the "email it instead" link below
 let lastSend = null;
 async function sendSubmission(subject, fields){
   lastSend = [subject, fields];
   const body = new FormData();
   body.append('_subject', subject);
-  body.append('_cc', EMAIL_CC);
-  body.append('_template', 'table');
-  body.append('_captcha', 'false');
   Object.entries(fields).forEach(([k, v]) => body.append(k, v));
   let lastErr;
   for(let attempt = 0; attempt < 3; attempt++){
     try {
       const ctl = new AbortController();
       const timer = setTimeout(()=>ctl.abort(), 12000);
-      const res = await fetch('https://formsubmit.co/ajax/' + EMAIL_TO, {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
         body,
         headers: { 'Accept': 'application/json' },
         signal: ctl.signal
       });
       clearTimeout(timer);
-      if(!res.ok) throw new Error('FormSubmit request failed: ' + res.status);
+      if(!res.ok) throw new Error('Form service returned ' + res.status);
       return await res.json();
     } catch(e){
       lastErr = e;
@@ -598,11 +596,11 @@ async function sendSubmission(subject, fields){
   }
   throw lastErr;
 }
-// If the automatic send fails (e.g. the free mail service is down), offer the same message as a
-// ready-written email the person can send from their own email app.
+// If the automatic send fails, offer the same message as a ready-written email the person can send
+// from their own email app.
 function mailtoFallback(subject, fields){
   const text = Object.entries(fields).filter(([k,v])=>v).map(([k,v])=>k+': '+v).join('\n');
-  return 'mailto:'+EMAIL_TO+'?cc='+encodeURIComponent(EMAIL_CC)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(text);
+  return 'mailto:'+FALLBACK_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(text);
 }
 function showSendError(el, subject, fields){
   el.innerHTML = 'Sorry, we couldn\'t send this automatically. <a href="'+mailtoFallback(subject, fields)+'">Click here to email it instead</a>.';
