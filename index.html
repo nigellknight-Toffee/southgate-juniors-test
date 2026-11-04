@@ -134,7 +134,7 @@
 
   /* ---------- Consent banner, footer, legal pages ---------- */
   .hero-avatar{width:76px;height:76px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:24px;flex-shrink:0;}
-  .video-note{margin:6px 14px 0;font-size:12px;color:var(--muted);}
+  .video-note{margin:0 14px 8px;font-size:12px;color:var(--muted);}
   .form-note{margin:14px 0 0;font-size:12px;color:var(--muted);line-height:1.5;}
   .linkbtn{background:none;border:none;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer;}
   .site-footer{max-width:1000px;margin:0 auto;padding:18px 18px 28px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;border-top:1px solid var(--line);}
@@ -584,8 +584,8 @@ function renderSkillCard(s){
   // Inline video: the button just reveals a .video-wrap; the iframe itself is built lazily by
   // attachShell's click handler (document.createElement, not innerHTML — see comment there).
   const watchControl = s.embed
-    ? `<button class="video-toggle" data-video="${s.id}" data-embed="${s.embed}">Watch the video</button>
-      <p class="video-note">Plays a video from ${s.embed.includes('vimeo') ? 'Vimeo' : 'YouTube'}.</p>
+    ? `<p class="video-note">Plays a video from ${s.embed.includes('vimeo') ? 'Vimeo' : 'YouTube'}.</p>
+      <button class="video-toggle" data-video="${s.id}" data-embed="${s.embed}">Watch the video</button>
       <div class="video-wrap" id="vid-${s.id}"></div>`
     : '';
   return `
