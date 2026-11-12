@@ -109,7 +109,7 @@
   .chip.outpos .dot{background:var(--red);}
   .chip.gk .dot{background:var(--gold);}
   .chip:active{cursor:grabbing;}
-  .chip{cursor:grab;touch-action:none;}
+  .chip{cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
   .dragging-clone{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;transform:translate(-50%,-50%) scale(1.05);opacity:0.95;box-shadow:0 6px 16px rgba(0,0,0,0.25);}
   .chip.used{opacity:.35;pointer-events:none;}
   .form-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;max-width:420px;}
@@ -826,12 +826,32 @@ function attachYourSkills(){
   chips.forEach(chip=>{
     chip.addEventListener('pointerdown', e=>{
       if(chip.classList.contains('used')) return;
-      e.preventDefault();
+      const isTouch = e.pointerType === 'touch';
+      if(!isTouch) e.preventDefault();
       const startX = e.clientX, startY = e.clientY;
       let dragging = false;
       let clone = null;
+      let armed = !isTouch;      // touch: press and hold briefly to drag, a swipe scrolls the page
+      let timer = null;
+      function blockScroll(te){ if(armed) te.preventDefault(); }
+      function cleanup(){
+        clearTimeout(timer);
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('touchmove', blockScroll);
+        document.removeEventListener('pointercancel', onCancel);
+        chip.style.opacity = '';
+        zones.forEach(z=>z.classList.remove('dragover'));
+        if(clone){ clone.remove(); clone = null; }
+      }
+      function onCancel(){ cleanup(); }
+      if(isTouch){
+        timer = setTimeout(()=>{ armed = true; if(navigator.vibrate) navigator.vibrate(15); }, 180);
+        document.addEventListener('touchmove', blockScroll, {passive:false});
+        document.addEventListener('pointercancel', onCancel, {once:true});
+      }
       function onMove(ev){
         const dx = ev.clientX - startX, dy = ev.clientY - startY;
+        if(!armed){ if(Math.hypot(dx,dy) > 8){ clearTimeout(timer); } return; }
         if(!dragging && Math.hypot(dx,dy) > 8){
           dragging = true;
           clone = chip.cloneNode(true);
@@ -849,11 +869,10 @@ function attachYourSkills(){
         }
       }
       function onUp(ev){
-        document.removeEventListener('pointermove', onMove);
-        chip.style.opacity = '';
-        zones.forEach(z=>z.classList.remove('dragover'));
+        const wasArmed = armed;
+        cleanup();
+        if(isTouch && !wasArmed && Math.hypot(ev.clientX-startX, ev.clientY-startY) > 8) return; // it was a scroll
         if(dragging){
-          if(clone) clone.remove();
           const el = document.elementFromPoint(ev.clientX, ev.clientY);
           const zone = el && el.closest('.zone');
           if(zone) placeSkill(zone.dataset.zone, chip.dataset.skill);
